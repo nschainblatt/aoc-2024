@@ -12,58 +12,54 @@ public class DayTwoPartTwo {
 		}
 
 		long numberOfSafeReports = reports.stream()
-				.filter(r -> reportTest(r, 0))
+				.filter(r -> originalReportTest(r, 0))
 				.count();
 
 		System.out.println(numberOfSafeReports);
 	}
 
-	private static boolean reportTest(List<Integer> report, int faultCounter) {
-		boolean increasing = false;
+	private static boolean originalReportTest(List<Integer> report, int faultCounter) {
+		if (report.size() < 2)
+			return true;
+
+		float signdiff = Math.signum(report.get(1) - report.get(0));
 		for (int i = 1; i < report.size(); i++) {
 			if (faultCounter > 1) {
 				return false;
 			}
-			if (i == 1 && report.get(0) < report.get(i))
-				increasing = true;
 
-			if (!isLevelPairValid(report.get(i), report.get(i - 1), increasing)) {
-				// increment fault counter, try removing each number in the report until it
-				// passes or we reach the end and then return false
-				faultCounter = faultCounter + 1;
+			if (!isSafe(report.get(i), report.get(i - 1), signdiff)) {
+				faultCounter++;
 				for (int j = 0; j < report.size(); j++) {
 					List<Integer> modifiedReport = new ArrayList<>(report);
 					modifiedReport.remove(j);
-					boolean validAfterRemoval = singleTest(modifiedReport);
+					boolean validAfterRemoval = modifiedReportTest(modifiedReport);
 					if (validAfterRemoval) {
 						return true;
 					}
 				}
-				return false;
+				return false; // by this time no removal made the report safe.
 			}
 		}
 
 		return true;
 	}
 
-	private static boolean singleTest(List<Integer> report) {
-		boolean increasing = false;
+	private static boolean modifiedReportTest(List<Integer> report) {
+		if (report.size() < 2)
+			return true;
+		float signdiff = Math.signum(report.get(1) - report.get(0));
 		for (int i = 1; i < report.size(); i++) {
-			if (i == 1 && report.get(0) < report.get(i))
-				increasing = true;
-			if (!isLevelPairValid(report.get(i), report.get(i - 1), increasing))
+			if (!isSafe(report.get(i), report.get(i - 1), signdiff))
 				return false;
 		}
 		return true;
 	}
 
-	// Difference must be between 1 and 3 inclusive, and the level must contain the
-	// same increasing boolean value (either still increasing or still decreasing)
-	private static boolean isLevelPairValid(int currentNumber, int previousNumber, boolean increasing) {
-		int difference = Math.abs(currentNumber - previousNumber);
-		boolean validDifference = difference >= 1 && difference <= 3;
-		boolean validIncrement = ((increasing && currentNumber > previousNumber)
-				|| !increasing && currentNumber < previousNumber);
-		return validDifference && validIncrement;
+	private static boolean isSafe(int currentNumber, int previousNumber, float signdiff) {
+		int absDifference = Math.abs(currentNumber - previousNumber);
+		boolean validDifference = absDifference >= 1 && absDifference <= 3;
+		boolean validSign = Math.signum(currentNumber - previousNumber) == Math.signum(signdiff);
+		return validDifference && validSign;
 	}
 }
