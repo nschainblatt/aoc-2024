@@ -1,0 +1,164 @@
+#Plan 
+
+given a incorrect update
+given ruleSet
+
+# 97,75,47,29,13
+
+sum = 0
+
+for i, inum in update:
+	for j, jnum in range(i + 1, len(update)):
+		if list(inum, jnum) not in ruleSet:
+			# incorrect, so continue to next jnum
+			continue
+
+		# if in ruleSet and not the jnum right after i (meaning we need a swap)
+		else if j - 1 does not equal i:
+			update.insert(i + 1, jnum) update.remove(j)
+	
+	# At this point this update should be valid, so add it's middle number to the sum
+	sum += getMiddleIndexFrom(update)
+
+
+# assuming all are correct now, if we can't assume we should just check if the update is valid after loops are done
+
+print(sum)
+
+
+# What is the current problem?
+# We are only looking to the numbers to the right of the current number for ones to insert
+# This is leading to a case where a update is found invalid because a possible number to insert is to the left.
+# But we can't check to the left because that number has already been paired up with another number
+# This means that there can be multiple numbers that make a pair valid
+#
+# Example:
+#
+# Original: 97,13,75,29,47
+#
+# Incorrect (current): 97,75,29,13,47
+#
+# Correct: 97,75,47,29,13
+#
+#
+# 75,29 AND 75,47 work
+#
+# But 13,47 doesn't work
+#
+# So we need a way to know what to pair 75 with so that there will be a pair for the remaining numbers to the right
+#
+#
+# One way off the top of my head:
+#
+#	Complete a full iteration, check if valid, if not valid try again but this time 
+#		inspecting already correct pairs, and seeing if we can swap out the right value with another one that is valid.
+#		Still look to the right for valid pairs and inserting when necessary.
+#
+#	Example:
+#		 Original: 97,13,75,29,47
+#		
+#		 first iteration...
+#		 ...
+#		 After first iteration: 97,75,29,13,47
+#
+#		 second iteration...
+#		 97,75 -> correct, so see if another pair exists
+#
+#
+#		 After second iteration: 97,75,29,13,47
+#		
+#		 Correct: 97,75,47,29,13
+#
+#
+#	Scratch that, doesn't work:
+#
+#	Another thing we can try is when we run out of numbers to the right and the pair is still not valid, 
+#		then we look to the left. If we end up taking a value from the left (remember if its to the left its valid)
+#		we have to give the index to the left of what we took a new value, so we will give it the value that we replaced the invalid one with.
+#
+#	Example:
+#
+#		 Original: 97,13,75,29,47
+#		
+#		 During first iteration: 97,75,29,13,47 -> we are on 13,47 and there is no pair and no more numbers to the right
+#		
+#		 so we move the 13 to the left until we find a pair
+#
+#
+#
+#		
+#		 Correct: 97,75,47,29,13
+#
+#	nevermind, after rereading the problem i discovered that if there is a pair 97|29, that there can be numbers between it
+#
+#
+#	we can do something like this:
+#
+#	if there is a num, that there exists no rule list that has that num in the 0th index position, then move it to the end
+#
+#
+#	Or we can do this:
+#		
+#		If one iteration has passed and its still not valid, move any invalid pairs down one to the right
+#
+#		 Original: 97,13,75,29,47
+#		
+#		 After first iteration: 97,75,29,13,47
+#		 After second iteration: 97,75,29,47,13
+#		 After first iteration: 97,75,29,13,47
+#		 After first iteration: 97,75,29,13,47
+#
+#if a number doesnt pair, then it must be a key, so move it to the left
+#		compare each curr_num to every number to the right until the end or
+#		if a number to the right doesn't have a pair then move that number to the left of the curr_num and continue
+#
+#		 Original: 97,13,75,29,47
+#		 index 0, on 97: -> its good, continue to next index
+#		 97,13,75,29,47
+#
+#		 index 1, on 13:
+#		 97,75,13,29,47 -> 75 to index 1 and shift everything else down 1 
+#
+#		 index 1, on 75 (because 13 was moved, were still on the same index)
+#		 75 is good, continue to next index
+#		 97,75,13,29,47
+#
+#		 index 2, on 13
+#		 97,75,29,13,47 -> move 29 to index 2 and shift everything else down 1
+#
+#		 index 2, on 29 (because 13 was moved)
+#		 97,75,47,29,13 -> move 47 to index 2 and shift everything else down 1
+#
+#		 index 2, on 47
+#		 47 is good continue
+#
+#		 index 3, on 29
+#		 29 is good continue
+#
+#		 index 4, on 13
+#		 13 is good (because at end) continue
+#		
+#		 Correct: 97,75,47,29,13
+#
+#
+#
+#		 97,75,13,29,47
+#		 97,75,29,13,47
+#		 97,75,47,13,29
+#		 97,75,47,29,13
+#
+#		 pseudocode time:
+#
+#		 give ruleset and updateline
+#
+#		 for i, inum in updateline:
+#
+#			for j, jnum in range(i + 1, line):
+#
+#				while list(inum, jnum) not in ruleSet:
+#					swap(i, j)
+#					
+#
+#
+#		
+#
