@@ -1,0 +1,112 @@
+
+
+....#.....
+.........#
+..........
+..#.......
+.......#..
+..........
+.#..^.....
+........#.
+#.........
+......#...
+
+# Plan
+
+
+given the lines are processed and stored in a list of list (line, character) # type will be List<List<Character>>
+
+
+	lines = getLinesFromInput()
+
+1. Find the starting positing (locate the starting positoin of the guard)
+
+	startingPosition = findStartingPositionOfGuard(lines) # type of starting position is a list of two indices (line_index, character_index)
+	
+
+2. Initialize the set which will hold all unique positions of the guard, we will use the size of this set at the end for the final answer
+
+	positionSet = new Set(startingPostion) # adding the initial position of the guard to the set
+
+3. Go from the starting position in the following manner:
+	the guard starts facing upwards like ^, go we go up (subtracting the line index) until we reach # or go out of bounds (guard left the area and the program is done)
+
+	if we encounter a #, turn right >, and continue to # or end of line (which ends program)
+
+	if we encounter a # going right, go down (because thats right from the point of view when your going right already)
+
+
+	i don't think we have to do any updating of the guard character, we just have to keep track of the current position, and the current direction the guard is going
+
+
+	what i mean:
+
+		guard starts at startingPosition, facing upwards
+		currentPosition = startingPosition
+		currentDirection = UP
+
+		if currentDirection is UP and canGoUp(currentPosition):
+			currentPosition = list(currentPosition.get(0), currentPosition.get(1) - 1)
+
+		detect the #...
+
+
+Pseudocode:
+
+enum Direction:
+	UP, RIGHT, DOWN, LEFT
+
+lines = getLinesFromInput(input)
+startingPosition = getStartingPositionFromLines(lines)
+positionSet = Set(startingPosition)
+
+currentPosition = startingPosition
+currentDirection = Direction.UP
+
+
+while positionIsValid(currentPosition, lines): # Meaning within bounts of the lines
+
+	if currentDirection == Direction.UP:
+		# Check up for # OR out of bound
+
+		charUp = getCharUp(currentPosition, lines)
+		if charUp is None:
+			# out of bounds
+			break # break because guard left area, so we just count up whats in the set now and we have our final answer
+		elif charUp is #:
+			currentDirection = Direction.RIGHT
+			continue # no need to increment, we want to check first, which happens in the next iteration in the correct ifelse branch condition
+		else:
+			# just go up
+			currentPosition = list(currentPosition.get(0) - 1, currentPosition.get(1))
+
+	elif currentDirection == Direction.RIGHT:
+		# Check right for # OR out of bound
+		charRight = getCharRight(currentPosition, lines)
+		if charRight is None:
+			# out of bounds
+			break # break because guard left area, so we just count up whats in the set now and we have our final answer
+		elif charRight is #:
+			currentDirection = Direction.DOWN
+			continue # no need to increment, we want to check first, which happens in the next iteration in the correct ifelse branch condition
+		else:
+			# just go right, we already know that we can go right because the character to the right was not None (and not #, but that wouldn't throw an error because its a valid index)
+			currentPosition = list(currentPosition.get(0), currentPosition.get(1) + 1)
+
+
+	elif currentDirection == Direction.DOWN:
+		# Check down for # OR out of bound
+
+	else currentDirection == Direction.LEFT:
+		# Check left for # OR out of bound
+
+
+	# add the modified currentPosition to the positionSet 
+	NOTE: We need to ensure that if the currentPosition was not modifed (due to either # or encountering the end) that we continue there so we don't reach here
+	with a position that is unmodified becuase it already exists in the set (though its a set, so no duplicates would enter really, but just to be explicit)
+
+	positionSet.add(currentPosition)
+
+
+print(positionSet.size()) # this will be the answer, because we are only counting up the total number of distinct positions the guard has visited.
+
