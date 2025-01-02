@@ -1,0 +1,51 @@
+# Plan for day 6 part 2
+
+# Goal: Place a single obstacle in any valid location on the map except the guards starting position that causes
+	the guard to enter an infinite loop.
+
+	Count the total number of different obstacles we can place in unique locations that all produce the guard going
+	in an infinite loop.
+
+
+# Problem 1: How to determine if the guard is in an infinite loop?
+			
+# Solution 1: Given the obstacle is in place, count the number of times the guard is blocked by the obstacle.
+	      If the guard is blocked at least twice, then it can be considered an infinite loop.
+	      The direction must be the same when the guard encounters the placed obstacle.
+	      Meaning the guard has to approach the placed obstacle twice from the same direction to be considered 
+	      an infinite loop.
+	      We can use this solution because of the simple rules the guard follows, that is the guard always turns right when they encounter an object.
+
+
+# Implementation:
+
+	We will place the obstacle at every possible index
+		Possible indices include every unused index ('.')
+		This filters out the possible chances of placing the obstacle
+		over an existing object and the guards starting position.
+		But this being said, we have to modify our move operation so that we aren't placing
+		the guard character at a possible obstacle placement location.
+
+
+
+	[x] - Wait, can we place an obstacle in an existing objects location and cause an infinite loop?
+		Well given the current input has an exit apart of part 1, we can assume that no existing object
+		causes an infinite loop, therefore placing an obstacle over an existing object would not cause an 
+		infinite loop.
+
+# Steps:
+
+1. For every unused index, place the obstacle
+
+2. Run the algorithm to play out the scenario and check for an infinite loop with the given obstacle placement
+
+3. Continue to run the algorithm on the current obstacle placement until the guard either exits the map (no loop found)
+   Or an infinite loop is reached (guard encounter placed object at least twice from the same direction)
+
+4. If an infinite loop was found, increment the total loop counter by 1
+
+5. Display the total loop counter
+
+
+# Pseudocode
+TODO:
