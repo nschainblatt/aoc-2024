@@ -44,8 +44,74 @@
 
 4. If an infinite loop was found, increment the total loop counter by 1
 
-5. Display the total loop counter
+5. Display the total loop counter of total number of unique locations we can place an object that causes the guard to go in an infinite loop
 
 
 # Pseudocode
 TODO:
+
+# new outer for loop that goes over every possible unused index, then places the obstacle before starting the while loop from part one
+# the while loop has been modifed to check for the obstacle character in addition to the existing object character in an additiona else if block
+# track the encounted object state to determine when a loop is reached
+# when the loop is reached increment the total obstacle loop counter by one and break to move onto the next possible obstacle placement
+# if the a guard loop is never reached the while loop will end because the guard will leave, causing the next obstacle index to start (we can assume an existing loop with the existing object placements wont happen because it didn't in part one and we aren't changing the 
+# layout of the existing objects, but if adding a new obstacle does cause a loop the 2 time encounter check will find it)
+#
+
+locationSet = Set()
+# OR
+obstacleLoopCounter = 0
+
+for line in lines:
+	for character in line:
+		
+		if not characterIsUnused(character):
+			continue
+
+		obstaclePosition = list(line, character)
+		placeObstacle(obstaclePosition) # places obstacle at this position
+
+		# existing variables defined here
+		  ...
+		  ...
+
+		# new variables defined here
+		encounteredObstacleCounter = 0
+		encounteredObstacleDirection = None
+
+		# existing while loop and code
+		while positionIsValid(currentPosition):
+
+		  # new code
+		  # weve reached a loop, increase the counter and go to next possible obstacle position
+		  if encounteredObstacleCounter >= 2:
+			obstacleLoopCounter++
+			break
+		  
+		  
+		  # existing code
+		  ...
+		  ...
+		  ...
+		  ...
+
+		  # added if and elif blocks for each direction to check for obstacle character on top of #
+		  if currentCharacter is '#':
+			...
+			...
+		  elif currentCharacter is 'O' and (currentDirection == encounteredObstacleDirection || encounteredObstacleDirection is None):
+			# encountered the obstacle for the first time is encounteredObstacleDirection is None
+			if encounretedObstacleDirection is None:
+				encounteredObstacleDirection = currentDirection
+			encounteredObstacleCounter++
+
+print(obstacleLoopCounter)
+
+
+		
+function characterIsUnused(character):
+	return character is '.'
+
+
+#NOTE: things to check on:
+#	does encountering the same object from the same direction twice really mean its a loop?
