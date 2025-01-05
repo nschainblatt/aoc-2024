@@ -115,3 +115,55 @@ function characterIsUnused(character):
 
 #NOTE: things to check on:
 #	does encountering the same object from the same direction twice really mean its a loop?
+#
+#
+#
+#
+# Updated plan:
+# tracking the indices and encounters for every object and obstacle
+
+class ObjectData:
+       int encounteredCount = 0
+       Direction encounteredDirection = null
+
+
+# create a map that will hold the objects location in the lines as the key, and the value will be an instance of ObjectData
+
+# create and load all objects into the map
+# ex... { object1: { encounteredCount: 0, encounteredDirection: null }}
+#
+# this will occur before we place the new obstacle
+objectMap = findAllObjectsFromInput(lines)
+
+# Now we use this map in our existing loop.
+#
+# When we come across a char that is either a # or a O (existing or placed obstacle)
+# We check the corresponding object inthe objectMap, setting the direction if null or determining a loop has been encountered
+# by seeing that the count of encountered >= 2 and the direction is still the same as the current direction the guard is facing during
+# the encounter
+#
+# Same logic applies on when to break out condidering it a loop
+#
+#
+#
+
+
+function fundAllObjectsFromInput(lines):
+
+	objectMap = map()
+
+	for i, line in lines:
+
+		for j, character in line:
+
+			if character == '#':
+
+				objectData = ObjectData()
+
+				objectMap.put(list(i, j), objectData)
+
+	return objectMap
+				
+				
+
+
