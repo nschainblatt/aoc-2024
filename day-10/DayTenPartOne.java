@@ -226,11 +226,6 @@ public class DayTenPartOne {
 					// towards the total
 					pathStack.push(new Path(path.id, newPosition, newPositionValidDirections));
 				}
-				// FIXME:
-				// something is up, its going to a new path instead of staying on current until
-				// its bad then go to next
-				// i think its because it doesn't know to look in all directions in the new
-				// position for some reason
 
 				// Get the next position to check
 				// System.out.println("Getting new position in same direction\n");
