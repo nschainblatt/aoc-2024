@@ -26,7 +26,7 @@ public class DayTenPartOne {
 			}
 		}
 
-		return trainHeadIndices; 
+		return trainHeadIndices;
 	}
 
 	public static boolean isPositionInBounds(List<List<String>> lines, int[] position) {
@@ -81,7 +81,6 @@ public class DayTenPartOne {
 		for (Direction direction : Direction.values()) {
 
 			int[] newPosition = getNewPositionInDirection(position, direction);
-			// System.out.println("DEBUG: NEW POSITION BEFORE CHECKING: " + Arrays.toString(newPosition));
 
 			if (!isPositionInBounds(lines, newPosition)) {
 				continue;
@@ -146,16 +145,14 @@ public class DayTenPartOne {
 		@Override
 		public boolean equals(Object other) {
 			if (this == other)
-				return true; // Same reference
+				return true;
 			if (other == null)
-				return false; // either or both null
+				return false;
 			if (!(other instanceof PathEnd))
-				return false; // different object type
-			PathEnd otherPathEnd = (PathEnd) other; // same object type
+				return false;
+			PathEnd otherPathEnd = (PathEnd) other;
 			return this.pathId == otherPathEnd.pathId
-					&& Objects.equals(this.pathEndLocations, otherPathEnd.pathEndLocations); // all
-															// fields
-															// equal
+					&& Objects.equals(this.pathEndLocations, otherPathEnd.pathEndLocations);
 		}
 	}
 
@@ -182,10 +179,8 @@ public class DayTenPartOne {
 
 	public static void travelPath(Path path, Stack<Path> pathStack, Set<PathEnd> pathEndCount,
 			List<List<String>> lines) {
-		// System.out.println("CURRENT PATH: " + path);
 
 		for (Direction direction : path.directions) {
-			// System.out.println("New direction: " + direction);
 			// NOTE: any direction inside the paths direction set has already been checked
 			// to be valid, hence
 			// why it was added to the set in the first place.
@@ -204,19 +199,10 @@ public class DayTenPartOne {
 					pathEndCount.add(new PathEnd(path.id, List.of(newPosition[0], newPosition[1])));
 				}
 
-				// printLines(lines, newPosition);
-				// System.out.println("Valid position: " + Arrays.toString(newPosition) + " - "
-				// 		+ numberAtPosition);
-				// System.out.println("Previous number: " + previousNumber);
-
 				// Given the position and value are valid, get the new valid directions that we
 				// can go to from here (left, right, up down)
 				Set<Direction> newPositionValidDirections = getValidDirectionsFromPosition(lines,
 						newPosition);
-
-				// if (newPositionValidDirections.contains(direction)) {
-				// newPositionValidDirections.remove(direction);
-				// }
 
 				// If there is a new path away from current position add to visit later
 				if (!newPositionValidDirections.isEmpty()) {
@@ -227,11 +213,10 @@ public class DayTenPartOne {
 					pathStack.push(new Path(path.id, newPosition, newPositionValidDirections));
 				}
 
-				// Get the next position to check
-				// System.out.println("Getting new position in same direction\n");
 				newPosition = getNewPositionInDirection(newPosition, direction);
 
 				try {
+					// NOTE: for viewing the printed lines like a maze
 					// Thread.sleep(1000);
 				} catch (Exception ex) {
 
@@ -239,12 +224,7 @@ public class DayTenPartOne {
 
 				previousNumber = numberAtPosition;
 			}
-			// System.out.println("Invalid, moving to next direction, same path\n");
-
 		}
-
-		// System.out.println("DEBUG: done with this path, moving to the next one");
-
 	}
 
 	public static void main(String[] args) throws Exception {
@@ -254,29 +234,24 @@ public class DayTenPartOne {
 
 		int idIncrement = 0;
 
-				List<int[]> positionOfTrailHeads = getAllTrainHeadIndices(lines);
-	
-				for (int[] positionOfTrailHead : positionOfTrailHeads) {
+		List<int[]> positionOfTrailHeads = getAllTrainHeadIndices(lines);
 
-				if (positionOfTrailHead.length == 0) {
-					break;
-				}
+		for (int[] positionOfTrailHead : positionOfTrailHeads) {
 
-				Set<Direction> validDirections = getValidDirectionsFromPosition(lines,
-						positionOfTrailHead);
-				pathStack.push(new Path(idIncrement++, positionOfTrailHead, validDirections));
+			if (positionOfTrailHead.length == 0) {
+				break;
+			}
 
-				while (!pathStack.isEmpty()) {
-					Path currentPath = pathStack.pop();
-					travelPath(currentPath, pathStack, pathEnds, lines);
-				}
-				}
+			Set<Direction> validDirections = getValidDirectionsFromPosition(lines,
+					positionOfTrailHead);
+			pathStack.push(new Path(idIncrement++, positionOfTrailHead, validDirections));
 
+			while (!pathStack.isEmpty()) {
+				Path currentPath = pathStack.pop();
+				travelPath(currentPath, pathStack, pathEnds, lines);
+			}
+		}
 
-		// for (PathEnd end : pathEnds) {
-		// 	System.out.println(end.pathId + " " + end.pathEndLocations + " " + getNumberAtPosition(lines, end.pathEndLocations.stream().mapToInt(Integer::intValue).toArray()));
-		// }
 		System.out.println(pathEnds.size());
-
 	}
 }
