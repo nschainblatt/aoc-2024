@@ -40,7 +40,7 @@ public class DayTenPartOne {
 		if (previousNumber == -1) {
 			return true;
 		}
-		int newNumber = Integer.parseInt(lines.get(position[0]).get(position[1]));
+		int newNumber = getNumberAtPosition(lines, position);
 		return newNumber == previousNumber + 1;
 	}
 
@@ -66,29 +66,19 @@ public class DayTenPartOne {
 		return Integer.parseInt(lines.get(lineIndex).get(characterIndex));
 	}
 
+	/**
+	 * Returns a set of valid directions that can be taken from the given position,
+	 * these directions are guranteed to have at least 1 valid increment in that
+	 * direction
+	 */
 	public static Set<Direction> getValidDirectionsFromPosition(List<List<String>> lines, int[] position) {
-		int lineIndex = position[0];
-		int characterIndex = position[1];
-
-		if (!isPositionInBounds(lines, position)) {
-			throw new IllegalStateException(
-					"Position is not in bounds. LineIndex: " + lineIndex + ". CharacterIndex: "
-							+ characterIndex);
-		}
-
 		Set<Direction> set = new HashSet<>();
-		int numberAtOriginalPosition = Integer.parseInt(lines.get(position[0]).get(position[1]));
+		int numberAtOriginalPosition = getNumberAtPosition(lines, position);
 		for (Direction direction : Direction.values()) {
 
 			int[] newPosition = getNewPositionInDirection(position, direction);
 
-			if (!isPositionInBounds(lines, newPosition)) {
-				continue;
-			}
-
-			// Check for valid increment
-			int numberAtNewPosition = getNumberAtPosition(lines, newPosition);
-			if (numberAtNewPosition != numberAtOriginalPosition + 1) {
+			if (!isPositionValid(lines, newPosition, numberAtOriginalPosition)) {
 				continue;
 			}
 
@@ -177,25 +167,31 @@ public class DayTenPartOne {
 		}
 	}
 
-	public static void travelPath(Path path, Stack<Path> pathStack, Set<PathEnd> pathEndCount,
-			List<List<String>> lines) {
+	public static boolean isPositionValid(List<List<String>> lines, int[] newPosition, int previousNumber) {
+		return isPositionInBounds(lines, newPosition)
+				&& isPositionValueOneGreater(lines, newPosition, previousNumber);
+	}
+
+	public static boolean hasTrailEndedSuccessfully(List<List<String>> lines, int currentNumber,
+			int[] currentPosition, Direction currentDirection) {
+		int[] previousPosition = getNewPositionInDirection(currentPosition, reverseDirection(currentDirection));
+		int previousNumber = getNumberAtPosition(lines, previousPosition);
+		return currentNumber == 9 && previousNumber == 8;
+	}
+
+	public static void travelPath(Path path, Stack<Path> pathStack, Set<PathEnd> pathEndCount, List<List<String>> lines) {
 
 		for (Direction direction : path.directions) {
-			// NOTE: any direction inside the paths direction set has already been checked
-			// to be valid, hence
-			// why it was added to the set in the first place.
+			// NOTE:
+			// Any direction inside the paths directions set has already been checked
+			// to be valid (in bounds and valid incrememnt). This means that the first
+			// position in this direction is valid.
 			int[] newPosition = getNewPositionInDirection(path.position, direction);
 			int previousNumber = -1;
-			// NOTE: First new position from above is already valid, this condition is for
-			// future positions
-			while (isPositionInBounds(lines, newPosition)
-					&& isPositionValueOneGreater(lines, newPosition, previousNumber)) {
+			while (isPositionValid(lines, newPosition, previousNumber)) {
 				int numberAtPosition = getNumberAtPosition(lines, newPosition);
 
-				int[] previousPosition = getNewPositionInDirection(newPosition,
-						reverseDirection(direction));
-				int actualPreviousNumber = getNumberAtPosition(lines, previousPosition);
-				if (numberAtPosition == 9 && (actualPreviousNumber == 8)) {
+				if (hasTrailEndedSuccessfully(lines, numberAtPosition, newPosition, direction)) {
 					pathEndCount.add(new PathEnd(path.id, List.of(newPosition[0], newPosition[1])));
 				}
 
@@ -217,6 +213,7 @@ public class DayTenPartOne {
 
 				try {
 					// NOTE: for viewing the printed lines like a maze
+					// printLines(lines, newPosition);
 					// Thread.sleep(1000);
 				} catch (Exception ex) {
 
@@ -232,18 +229,16 @@ public class DayTenPartOne {
 		Stack<Path> pathStack = new Stack<>();
 		Set<PathEnd> pathEnds = new HashSet<>();
 
+		// NOTE: All original trail heads and sub-trails created from this trail will
+		// contain the same id allowing the count to be correct for multiple of the same
+		// trails ending at the same trail end
 		int idIncrement = 0;
 
 		List<int[]> positionOfTrailHeads = getAllTrainHeadIndices(lines);
 
 		for (int[] positionOfTrailHead : positionOfTrailHeads) {
 
-			if (positionOfTrailHead.length == 0) {
-				break;
-			}
-
-			Set<Direction> validDirections = getValidDirectionsFromPosition(lines,
-					positionOfTrailHead);
+			Set<Direction> validDirections = getValidDirectionsFromPosition(lines, positionOfTrailHead);
 			pathStack.push(new Path(idIncrement++, positionOfTrailHead, validDirections));
 
 			while (!pathStack.isEmpty()) {
