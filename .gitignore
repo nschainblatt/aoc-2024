@@ -1,0 +1,8 @@
+# Ignore everything by default.
+*
+
+# Include all directories (but not their files initially).
+!/**/
+
+# Include files with extensions
+!*.*
