@@ -207,17 +207,14 @@ public class DayTenPartOne {
 
         // If there is a new path away from current position add to visit later
         if (!newPositionValidDirections.isEmpty()) {
-          // NOTE: id's allow me to see if a sub-path has found the same trail end as a
-          // sibling or parent path so i don't count it twice for sub or parent
-          // other non related paths can reach the same train end and it will count
-          // towards the total
           pathStack.push(new Path(path.id, newPosition, newPositionValidDirections));
         }
 
         newPosition = getNewPositionInDirection(newPosition, direction);
 
         try {
-          // NOTE: for viewing the printed lines like a maze
+          // NOTE:
+          // For viewing the printed lines like a maze
           // printLines(lines, newPosition);
           // Thread.sleep(1000);
         } catch (Exception ex) {
@@ -234,7 +231,8 @@ public class DayTenPartOne {
     Stack<Path> pathStack = new Stack<>();
     Set<PathEnd> pathEnds = new HashSet<>();
 
-    // NOTE: All original trail heads and sub-trails created from this trail will
+    // NOTE:
+    // All original trail heads and sub-trails created from this trail will
     // contain the same id allowing the count to be correct for multiple of the same
     // trails ending at the same trail end
     int idIncrement = 0;
