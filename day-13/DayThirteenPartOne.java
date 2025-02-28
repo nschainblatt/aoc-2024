@@ -11,11 +11,13 @@ public class DayThirteenPartOne {
     public final String label;
     public final int xDifference;
     public final int yDifference;
+    public final int cost;
 
-    public Button(String label, int xDifference, int yDifference) {
+    public Button(String label, int xDifference, int yDifference, int cost) {
       this.label = label;
       this.xDifference = xDifference;
       this.yDifference = yDifference;
+      this.cost = cost;
     }
 
     @Override
@@ -66,15 +68,15 @@ public class DayThirteenPartOne {
       }
       String[] lineParts = line.split(":");
       if (machineLine == 1 || machineLine == 2) {
-        String buttonLabel = lineParts[0];
         int firstPlus =
             lineParts[1].indexOf('+') + 1; // Adding one to get the index of the first digit
         int firstComma = lineParts[1].indexOf(',');
         int xDifference = Integer.parseInt(lineParts[1].substring(firstPlus, firstComma));
         int yDifference =
             Integer.parseInt(lineParts[1].substring(lineParts[1].indexOf('+', firstPlus + 1)));
-        Button button = new Button(lineParts[0], xDifference, yDifference);
-        if (button.label.endsWith("A")) {
+        boolean isButtonA = lineParts[0].endsWith("A");
+        Button button = new Button(lineParts[0], xDifference, yDifference, isButtonA ? 3 : 1);
+        if (isButtonA) {
           current.buttonA = button;
         } else {
           current.buttonB = button;
@@ -97,11 +99,50 @@ public class DayThirteenPartOne {
     return clawMachines;
   }
 
-  public static void main(String[] args) {
-    List<String> lines = getLinesFromInput("sampleInput");
-    List<ClawMachine> clawMachines = getClawMachinesFromLines(lines);
-    for (ClawMachine claw : clawMachines) {
-      System.out.println(claw + "\n");
+  public static int getMinimumTokensRequiredIfWinnable(ClawMachine clawMachine) {
+    int xPrizeLocation = clawMachine.prizeLocation.x;
+    int yPrizeLocation = clawMachine.prizeLocation.y;
+
+    int lowestCost = Integer.MAX_VALUE;
+    for (int buttonAPresses = 100; buttonAPresses >= 0; buttonAPresses--) {
+      for (int buttonBPresses = 100; buttonBPresses >= 0; buttonBPresses--) {
+        int x = clawMachine.buttonA.xDifference * buttonAPresses;
+        x += clawMachine.buttonB.xDifference * buttonBPresses;
+        int y = clawMachine.buttonA.yDifference * buttonAPresses;
+        y += clawMachine.buttonB.yDifference * buttonBPresses;
+
+        if (x == xPrizeLocation && y == yPrizeLocation) {
+          int localCost = clawMachine.buttonA.cost * buttonAPresses;
+          localCost += clawMachine.buttonB.cost * buttonBPresses;
+          if (localCost < lowestCost) {
+            lowestCost = localCost;
+          }
+        }
+      }
     }
+
+    if (lowestCost == Integer.MAX_VALUE) {
+      return -1;
+    }
+
+    return lowestCost;
+  }
+
+  public static void main(String[] args) {
+    List<String> lines = getLinesFromInput("input");
+    List<ClawMachine> clawMachines = getClawMachinesFromLines(lines);
+    long totalTokensRequired = 0;
+    for (ClawMachine clawMachine : clawMachines) {
+      System.out.println(clawMachine);
+      int tokensRequired = getMinimumTokensRequiredIfWinnable(clawMachine);
+      System.out.println("Can win: " + (tokensRequired != -1));
+      if (tokensRequired != -1) {
+        totalTokensRequired += tokensRequired;
+        System.out.println("Tokens took to win: " + tokensRequired + "\n");
+      }
+    }
+
+    System.out.println(
+        "\nMinimal tokens required to win all possible prizes: " + totalTokensRequired);
   }
 }
