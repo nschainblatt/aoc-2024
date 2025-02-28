@@ -1,0 +1,31 @@
+# Plan
+
+
+Final problem:
+	What is the fewest number of tokens required to win all possible prizes?
+
+
+Breaking the problem down:
+	- Button A requires 3 tokens
+
+	- Button B requires 1 token
+
+	- There are some machines that cannot win, so this means that we have to determine all possible combinations of A and B
+	up to a certain point (that point being that we go over either the X or the Y coordinate the prize is locatied at)
+		NOTE: there are definitely more ways to optimize this. I don't know off the top of my head right now.
+
+	- Given a machine can win (we don't know initially so have to keep trying until we exceed a threshhold of some sort) 
+	we need to find the smallest number of tokens per machine to win (so smallest # of tokens for machine 1, machine 2, ...)
+
+	- Sum up the (smallest) number of tokens it took to win all winnable games.
+
+
+Proposed Solution:
+
+	1. Determine how to win a single game (if possible).
+
+	2. Determine if a game is not winnable.
+
+	3. Determine how to win a single game (if possible) in the shortest amount of tokens.
+
+	4. Count up all the tokens used (should be the minimum possible) and display on screen. 
